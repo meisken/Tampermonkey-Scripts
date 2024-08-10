@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Add a clock on Youtube
 // @namespace    http://tampermonkey.net/
-// @version      v1
+// @version      v2
 // @description  try to take over the world!
 // @author       meisken
 // @match        https://www.youtube.com/*
@@ -36,16 +36,45 @@ const createTimeElement = () => {
 }
 
 const setClock = (element) => {
+
     if(element){
         element.textContent = getCurrentTimeString();
-        setTimeout(() => setClock(element), 1000 *60 )
     }else{
         console.warn("clock element is missing")
     }
-  
-
-    
+ 
 }
+
+
+
+const initTimer = (element) => {
+    let timer = setInterval(() => {
+        setClock(element)
+    }, 1000)
+  
+    const preventRunningInOtherTab = () => {
+ 
+        document.addEventListener("visibilitychange", () => {
+      
+            if (document.visibilityState == "visible" && !timer) {
+                timer = setInterval(() => {
+                    setClock(element)
+                }, 1000)
+             
+            } else {
+                clearInterval(timer)
+                timer = undefined;
+            }
+        });
+    }
+
+    preventRunningInOtherTab()
+
+
+}
+
+
+
 const hideClockWhenInput = (element) => {
     const searchBar = document.querySelector("#search-input > #search")
 
@@ -65,7 +94,7 @@ const hideClockWhenInput = (element) => {
 (function() {
     'use strict';
     const clock = createTimeElement()
-    setClock(clock)
+    initTimer(clock)
     hideClockWhenInput(clock)
     // Your code here...
 })();
