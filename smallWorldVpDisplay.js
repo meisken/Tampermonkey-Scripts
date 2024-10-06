@@ -1,8 +1,7 @@
 
 //https://boardgamearena.com/5/smallworld?*
 
-//bug: if the player has space [2] is not the score
-//bug: score in round can not correctly be saved
+
 const wait = (selectors) => {
     return new Promise((resolve,reject) => {
         const timer = setInterval(() => {
@@ -24,13 +23,15 @@ const logMutationObserver = async () => {
         mutationList.forEach(({ addedNodes }) => {
             addedNodes.forEach(( node ) => {
                 const logContent = node.textContent
-         
+       
 
                 if(logContent?.includes("paid") || logContent?.includes("earn")){
                     const paidOrEarn = logContent?.includes("earn") ? "earn" : "paid";
 
-                    const playerName = logContent?.split(" ")[0]
-                    const paidCoinCount = logContent?.split(" ")[2]
+                    //const playerName = textLog.querySelector(".playername").textcontent
+
+                    const playerName = node.querySelector(".playername").textContent
+                    const paidCoinCount = logContent?.replace(playerName,"").split(" ")[2]
 
                     if(!playerData[playerName] ){
                         playerData[playerName]  = 5
@@ -59,14 +60,15 @@ const popUpObserver = async () => {
     const popUpObserver = new MutationObserver((mutationList, observer) => {
 
         mutationList.forEach(({ addedNodes }) => {
-            addedNodes.forEach(( _node ) => {
-                const node = _node;
+            addedNodes.forEach(( node ) => {
+         
               
                 if(node.classList.contains("sw_popup")){
            
                     const popupContent = node.querySelector(".sw_popup_content > p")?.textContent
-                    const playerName = popupContent?.split(" ")[0]
-                    const paidCoinCount = popupContent?.split(" ")[2]
+                    const playerName = node.querySelector(".playername").textContent
+                    const popupContentWithoutName = popupContent?.replace(playerName,"")
+                    const paidCoinCount = popupContentWithoutName.split(" ")[2]
 
                     if(!playerData[playerName] ){
                         playerData[playerName]  = 5
@@ -74,10 +76,13 @@ const popUpObserver = async () => {
                     
                     if(playerName && paidCoinCount){
                         playerData[playerName] += parseInt(paidCoinCount)
-
+                        if(popupContentWithoutName.split(" ")[5]){
+                            playerData[playerName] += parseInt(popupContentWithoutName.split(" ")[5].match(/\d/g).join(""))
+                        }
                         console.table(playerData)
                     }
-                 
+              
+                    const inTurnScore = 1//.replace("Downraiser123", "").split(" ")[5].match(/\d/g);
                 }
             })
     
@@ -94,5 +99,6 @@ const popUpObserver = async () => {
     'use strict';
     logMutationObserver()
     popUpObserver()
+    console.log("insert small world score counter v2")
     // Your code here...
 })();
