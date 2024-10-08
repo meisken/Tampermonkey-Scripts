@@ -33,7 +33,7 @@ const logMutationObserver = async () => {
                     const playerName = node.querySelector(".playername").textContent
                     const paidCoinCount = logContent?.replace(playerName,"").split(" ")[2]
 
-                    if(!playerData[playerName] ){
+                    if(playerData[playerName] === undefined){
                         playerData[playerName]  = 5
                     }
 
@@ -70,7 +70,7 @@ const popUpObserver = async () => {
                     const popupContentWithoutName = popupContent?.replace(playerName,"")
                     const paidCoinCount = popupContentWithoutName.split(" ")[2]
 
-                    if(!playerData[playerName] ){
+                    if(playerData[playerName] === undefined){
                         playerData[playerName]  = 5
                     }
                     
@@ -99,6 +99,6 @@ const popUpObserver = async () => {
     'use strict';
     logMutationObserver()
     popUpObserver()
-    console.log("insert small world score counter v2")
+    console.log("insert small world score counter v3")
     // Your code here...
 })();
